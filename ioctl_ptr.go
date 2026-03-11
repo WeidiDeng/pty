@@ -3,12 +3,16 @@
 
 package pty
 
-import "reflect"
+import (
+	"reflect"
+	"unsafe"
+)
 
-// ptrToUintptr converts a pointer value (passed as any) to its uintptr representation for use in syscalls.
-func ptrToUintptr(ptr any) uintptr {
+// ptrToUnsafePointer converts a pointer value (passed as any) to an unsafe.Pointer for use in syscalls.
+// The final uintptr conversion must be deferred to the syscall.Syscall argument to satisfy the Go GC rules.
+func ptrToUnsafePointer(ptr any) unsafe.Pointer {
 	if ptr == nil {
-		return 0
+		return nil
 	}
-	return reflect.ValueOf(ptr).Pointer()
+	return unsafe.Pointer(reflect.ValueOf(ptr).Pointer()) //nolint:gosec // Safe: reflect.Value keeps ptr alive; uintptr immediately converted back.
 }

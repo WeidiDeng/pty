@@ -3,7 +3,10 @@
 
 package pty
 
-import "syscall"
+import (
+	"syscall"
+	"unsafe"
+)
 
 // Local syscall const values.
 const (
@@ -11,8 +14,8 @@ const (
 	TIOCSWINSZ = syscall.TIOCSWINSZ
 )
 
-func ioctlInner(fd, cmd, ptr uintptr) error {
-	_, _, e := syscall.Syscall(syscall.SYS_IOCTL, fd, cmd, ptr)
+func ioctlInner(fd, cmd uintptr, ptr unsafe.Pointer) error {
+	_, _, e := syscall.Syscall(syscall.SYS_IOCTL, fd, cmd, uintptr(ptr)) //nolint:gosec // ptr-to-uintptr at syscall site.
 	if e != 0 {
 		return e
 	}

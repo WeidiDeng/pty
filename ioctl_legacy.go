@@ -6,5 +6,5 @@ package pty
 import "os"
 
 func ioctl(f *os.File, cmd uintptr, ptr any) error {
-	return ioctlInner(f.Fd(), cmd, ptrToUintptr(ptr)) // fall back to blocking io (old behavior)
+	return ioctlInner(f.Fd(), cmd, ptrToUnsafePointer(ptr)) // fall back to blocking io (old behavior)
 }
