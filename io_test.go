@@ -9,7 +9,6 @@ import (
 	"os"
 	"runtime"
 	"sync"
-	"syscall"
 	"testing"
 	"time"
 )
@@ -30,9 +29,6 @@ var glTestFdLock sync.Mutex
 //nolint:paralleltest // Potential in (*os.File).Fd().
 func TestReadDeadline(t *testing.T) {
 	ptmx, success := prepare(t)
-	if err := syscall.SetNonblock(int(ptmx.Fd()), true); err != nil {
-		t.Fatalf("Error: set non block: %s", err)
-	}
 
 	if err := ptmx.SetDeadline(time.Now().Add(timeout / 10)); err != nil {
 		if errors.Is(err, os.ErrNoDeadline) {
@@ -62,9 +58,6 @@ func TestReadDeadline(t *testing.T) {
 //nolint:paralleltest // Potential in (*os.File).Fd().
 func TestReadClose(t *testing.T) {
 	ptmx, success := prepare(t)
-	if err := syscall.SetNonblock(int(ptmx.Fd()), true); err != nil {
-		t.Fatalf("Error: set non block: %s", err)
-	}
 
 	go func() {
 		time.Sleep(timeout / 10)
