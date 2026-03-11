@@ -4,6 +4,7 @@
 package pty
 
 import (
+	"reflect"
 	"syscall"
 	"unsafe"
 )
@@ -41,7 +42,11 @@ type strioctl struct {
 func sysvicall6(trap, nargs, a1, a2, a3, a4, a5, a6 uintptr) (r1, r2 uintptr, err syscall.Errno)
 
 func ioctlInner(fd, cmd uintptr, ptr any) error {
-	if _, _, errno := sysvicall6(uintptr(unsafe.Pointer(&procioctl)), 3, fd, cmd, ptrToUintptr(ptr), 0, 0, 0); errno != 0 { //nolint:gosec // ptr-to-uintptr at syscall site.
+	var p unsafe.Pointer
+	if ptr != nil {
+		p = reflect.ValueOf(ptr).UnsafePointer()
+	}
+	if _, _, errno := sysvicall6(uintptr(unsafe.Pointer(&procioctl)), 3, fd, cmd, uintptr(p), 0, 0, 0); errno != 0 { //nolint:gosec // ptr-to-uintptr at syscall site.
 		return errno
 	}
 	return nil
