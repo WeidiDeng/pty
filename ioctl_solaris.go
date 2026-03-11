@@ -42,11 +42,13 @@ type strioctl struct {
 func sysvicall6(trap, nargs, a1, a2, a3, a4, a5, a6 uintptr) (r1, r2 uintptr, err syscall.Errno)
 
 func ioctlInner(fd, cmd uintptr, ptr any) error {
-	var p unsafe.Pointer
-	if ptr != nil {
-		p = reflect.ValueOf(ptr).UnsafePointer()
+	var errno syscall.Errno
+	if ptr == nil {
+		_, _, errno = sysvicall6(uintptr(unsafe.Pointer(&procioctl)), 3, fd, cmd, uintptr(0), 0, 0, 0)
+	} else {
+		_, _, errno = sysvicall6(uintptr(unsafe.Pointer(&procioctl)), 3, fd, cmd, uintptr(reflect.ValueOf(ptr).UnsafePointer()), 0, 0, 0) //nolint:gosec // ptr-to-uintptr at syscall site.
 	}
-	if _, _, errno := sysvicall6(uintptr(unsafe.Pointer(&procioctl)), 3, fd, cmd, uintptr(p), 0, 0, 0); errno != 0 { //nolint:gosec // ptr-to-uintptr at syscall site.
+	if errno != 0 {
 		return errno
 	}
 	return nil

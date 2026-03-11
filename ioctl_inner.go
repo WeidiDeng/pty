@@ -6,7 +6,6 @@ package pty
 import (
 	"reflect"
 	"syscall"
-	"unsafe"
 )
 
 // Local syscall const values.
@@ -16,11 +15,12 @@ const (
 )
 
 func ioctlInner(fd, cmd uintptr, ptr any) error {
-	var p unsafe.Pointer
-	if ptr != nil {
-		p = reflect.ValueOf(ptr).UnsafePointer()
+	var e syscall.Errno
+	if ptr == nil {
+		_, _, e = syscall.Syscall(syscall.SYS_IOCTL, fd, cmd, uintptr(0))
+	} else {
+		_, _, e = syscall.Syscall(syscall.SYS_IOCTL, fd, cmd, uintptr(reflect.ValueOf(ptr).UnsafePointer())) //nolint:gosec // ptr-to-uintptr at syscall site.
 	}
-	_, _, e := syscall.Syscall(syscall.SYS_IOCTL, fd, cmd, uintptr(p)) //nolint:gosec // ptr-to-uintptr at syscall site.
 	if e != 0 {
 		return e
 	}
