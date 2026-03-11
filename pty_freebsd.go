@@ -48,7 +48,6 @@ func isptmaster(f *os.File) (bool, error) {
 	err := ioctl(f, syscall.TIOCPTMASTER, nil)
 	return err == nil, err
 }
-
 var (
 	emptyFiodgnameArg fiodgnameArg
 	ioctlFIODGNAME    = _IOW('f', 120, unsafe.Sizeof(emptyFiodgnameArg))
@@ -68,7 +67,7 @@ func ptsname(f *os.File) (string, error) {
 		buf = make([]byte, n)
 		arg = fiodgnameArg{Len: n, Buf: (*byte)(unsafe.Pointer(&buf[0]))}
 	)
-	if err := ioctl(f, ioctlFIODGNAME, &arg); err != nil {
+	if err := ioctl(f, ioctlFIODGNAME, unsafe.Pointer(&arg)); err != nil {
 		return "", err
 	}
 

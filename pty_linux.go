@@ -7,6 +7,7 @@ import (
 	"os"
 	"strconv"
 	"syscall"
+	"unsafe"
 )
 
 func open() (pty, tty *os.File, err error) {
@@ -39,7 +40,7 @@ func open() (pty, tty *os.File, err error) {
 
 func ptsname(f *os.File) (string, error) {
 	var n _C_uint
-	err := ioctl(f, syscall.TIOCGPTN, &n)
+	err := ioctl(f, syscall.TIOCGPTN, unsafe.Pointer(&n))
 	if err != nil {
 		return "", err
 	}
@@ -49,5 +50,5 @@ func ptsname(f *os.File) (string, error) {
 func unlockpt(f *os.File) error {
 	var u _C_int
 	// use TIOCSPTLCK with a pointer to zero to clear the lock.
-	return ioctl(f, syscall.TIOCSPTLCK, &u)
+	return ioctl(f, syscall.TIOCSPTLCK, unsafe.Pointer(&u))
 }

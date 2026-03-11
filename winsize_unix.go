@@ -6,6 +6,7 @@ package pty
 import (
 	"os"
 	"syscall"
+	"unsafe"
 )
 
 // Winsize describes the terminal size.
@@ -18,14 +19,14 @@ type Winsize struct {
 
 // Setsize resizes t to s.
 func Setsize(t *os.File, ws *Winsize) error {
-	return ioctl(t, syscall.TIOCSWINSZ, ws)
+	return ioctl(t, syscall.TIOCSWINSZ, unsafe.Pointer(ws))
 }
 
 // GetsizeFull returns the full terminal size description.
 func GetsizeFull(t *os.File) (size *Winsize, err error) {
 	var ws Winsize
 
-	if err := ioctl(t, syscall.TIOCGWINSZ, &ws); err != nil {
+	if err := ioctl(t, syscall.TIOCGWINSZ, unsafe.Pointer(&ws)); err != nil {
 		return nil, err
 	}
 	return &ws, nil

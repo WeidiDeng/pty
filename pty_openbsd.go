@@ -6,6 +6,7 @@ package pty
 import (
 	"os"
 	"syscall"
+	"unsafe"
 )
 
 func cInt8ToString(in []int8) string {
@@ -35,7 +36,7 @@ func open() (pty, tty *os.File, err error) {
 	defer p.Close()
 
 	var ptm ptmget
-	if err := ioctl(p, uintptr(ioctl_PTMGET), &ptm); err != nil {
+	if err := ioctl(p, uintptr(ioctl_PTMGET), unsafe.Pointer(&ptm)); err != nil {
 		return nil, nil, err
 	}
 

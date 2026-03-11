@@ -84,7 +84,7 @@ func unlockpt(f *os.File) error {
 		icLen:     0,
 		icDP:      nil,
 	}
-	return ioctl(f, I_STR, &istr)
+	return ioctl(f, I_STR, unsafe.Pointer(&istr))
 }
 
 func minor(x uint64) uint64 { return x & 0377 }
@@ -97,7 +97,7 @@ func ptsdev(f *os.File) (uint64, error) {
 		icDP:      nil,
 	}
 
-	if err := ioctl(f, I_STR, &istr); err != nil {
+	if err := ioctl(f, I_STR, unsafe.Pointer(&istr)); err != nil {
 		return 0, err
 	}
 	var errors = make(chan error, 1)
@@ -146,7 +146,7 @@ func grantpt(f *os.File) error {
 		icLen:     int32(unsafe.Sizeof(strioctl{})),
 		icDP:      unsafe.Pointer(&pto),
 	}
-	if err := ioctl(f, I_STR, &istr); err != nil {
+	if err := ioctl(f, I_STR, unsafe.Pointer(&istr)); err != nil {
 		return errors.New("access denied")
 	}
 	return nil
@@ -164,8 +164,8 @@ func streamsPush(f *os.File, mod string) error {
 	// but since we are not using libc or XPG4.2, we should not be
 	// double-pushing modules
 
-	if err := ioctl(f, I_FIND, &buf[0]); err != nil {
+	if err := ioctl(f, I_FIND, unsafe.Pointer(&buf[0])); err != nil {
 		return nil
 	}
-	return ioctl(f, I_PUSH, &buf[0])
+	return ioctl(f, I_PUSH, unsafe.Pointer(&buf[0]))
 }

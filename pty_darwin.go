@@ -7,6 +7,7 @@ import (
 	"errors"
 	"os"
 	"syscall"
+	"unsafe"
 )
 
 func open() (pty, tty *os.File, err error) {
@@ -45,7 +46,7 @@ func open() (pty, tty *os.File, err error) {
 func ptsname(f *os.File) (string, error) {
 	n := make([]byte, _IOC_PARM_LEN(syscall.TIOCPTYGNAME))
 
-	err := ioctl(f, syscall.TIOCPTYGNAME, &n[0])
+	err := ioctl(f, syscall.TIOCPTYGNAME, unsafe.Pointer(&n[0]))
 	if err != nil {
 		return "", err
 	}

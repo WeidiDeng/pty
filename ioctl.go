@@ -3,23 +3,26 @@
 
 package pty
 
-import "os"
+import (
+	"os"
+	"unsafe"
+)
 
-func ioctl(f *os.File, cmd uintptr, ptr any) error {
-	return ioctlInner(f.Fd(), cmd, ptrToUnsafePointer(ptr)) // Fall back to blocking io.
+func ioctl(f *os.File, cmd uintptr, ptr unsafe.Pointer) error {
+	return ioctlInner(f.Fd(), cmd, ptr) // Fall back to blocking io.
 }
 
 // NOTE: Unused. Keeping for reference.
-func ioctlNonblock(f *os.File, cmd uintptr, ptr any) error {
+func ioctlNonblock(f *os.File, cmd uintptr, ptr unsafe.Pointer) error {
 	sc, e := f.SyscallConn()
 	if e != nil {
-		return ioctlInner(f.Fd(), cmd, ptrToUnsafePointer(ptr)) // Fall back to blocking io (old behavior).
+		return ioctlInner(f.Fd(), cmd, ptr) // Fall back to blocking io (old behavior).
 	}
 
 	ch := make(chan error, 1)
 	defer close(ch)
 
-	e = sc.Control(func(fd uintptr) { ch <- ioctlInner(fd, cmd, ptrToUnsafePointer(ptr)) })
+	e = sc.Control(func(fd uintptr) { ch <- ioctlInner(fd, cmd, ptr) })
 	if e != nil {
 		return e
 	}
