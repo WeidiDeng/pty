@@ -7,7 +7,6 @@ import (
 	"errors"
 	"os"
 	"syscall"
-	"unsafe"
 )
 
 func open() (pty, tty *os.File, err error) {
@@ -47,7 +46,7 @@ func ptsname(f *os.File) (string, error) {
 	 * ioctl(fd, TIOCPTSNAME, &pm) == -1 ? NULL : pm.sn;
 	 */
 	var ptm ptmget
-	if err := ioctl(f, uintptr(ioctl_TIOCPTSNAME), unsafe.Pointer(&ptm)); err != nil {
+	if err := ioctl(f, uintptr(ioctl_TIOCPTSNAME), &ptm); err != nil {
 		return "", err
 	}
 	name := make([]byte, len(ptm.Sn))

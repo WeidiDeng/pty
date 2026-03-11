@@ -67,7 +67,7 @@ func ptsname(f *os.File) (string, error) {
 	name := make([]byte, _C_SPECNAMELEN)
 	fa := fiodgnameArg{Name: (*byte)(unsafe.Pointer(&name[0])), Len: _C_SPECNAMELEN, Pad_cgo_0: [4]byte{0, 0, 0, 0}}
 
-	err := ioctl(f, ioctl_FIODNAME, unsafe.Pointer(&fa))
+	err := ioctl(f, ioctl_FIODNAME, &fa)
 	if err != nil {
 		return "", err
 	}

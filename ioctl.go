@@ -3,17 +3,14 @@
 
 package pty
 
-import (
-	"os"
-	"unsafe"
-)
+import "os"
 
-func ioctl(f *os.File, cmd uintptr, ptr unsafe.Pointer) error {
+func ioctl(f *os.File, cmd uintptr, ptr any) error {
 	return ioctlInner(f.Fd(), cmd, ptr) // Fall back to blocking io.
 }
 
 // NOTE: Unused. Keeping for reference.
-func ioctlNonblock(f *os.File, cmd uintptr, ptr unsafe.Pointer) error {
+func ioctlNonblock(f *os.File, cmd uintptr, ptr any) error {
 	sc, e := f.SyscallConn()
 	if e != nil {
 		return ioctlInner(f.Fd(), cmd, ptr) // Fall back to blocking io (old behavior).

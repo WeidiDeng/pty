@@ -3,11 +3,8 @@
 
 package pty
 
-import (
-	"os"
-	"unsafe"
-)
+import "os"
 
-func ioctl(f *os.File, cmd uintptr, ptr unsafe.Pointer) error {
+func ioctl(f *os.File, cmd uintptr, ptr any) error {
 	return ioctlInner(f.Fd(), cmd, ptr) // fall back to blocking io (old behavior)
 }
