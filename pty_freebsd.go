@@ -45,7 +45,7 @@ func open() (pty, tty *os.File, err error) {
 }
 
 func isptmaster(f *os.File) (bool, error) {
-	err := ioctl(f, syscall.TIOCPTMASTER, 0)
+	err := ioctl(f, syscall.TIOCPTMASTER, nil)
 	return err == nil, err
 }
 
@@ -68,7 +68,7 @@ func ptsname(f *os.File) (string, error) {
 		buf = make([]byte, n)
 		arg = fiodgnameArg{Len: n, Buf: (*byte)(unsafe.Pointer(&buf[0]))}
 	)
-	if err := ioctl(f, ioctlFIODGNAME, uintptr(unsafe.Pointer(&arg))); err != nil {
+	if err := ioctl(f, ioctlFIODGNAME, &arg); err != nil {
 		return "", err
 	}
 

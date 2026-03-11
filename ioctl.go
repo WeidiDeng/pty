@@ -5,21 +5,21 @@ package pty
 
 import "os"
 
-func ioctl(f *os.File, cmd, ptr uintptr) error {
-	return ioctlInner(f.Fd(), cmd, ptr) // Fall back to blocking io.
+func ioctl(f *os.File, cmd uintptr, ptr any) error {
+	return ioctlInner(f.Fd(), cmd, ptrToUintptr(ptr)) // Fall back to blocking io.
 }
 
 // NOTE: Unused. Keeping for reference.
-func ioctlNonblock(f *os.File, cmd, ptr uintptr) error {
+func ioctlNonblock(f *os.File, cmd uintptr, ptr any) error {
 	sc, e := f.SyscallConn()
 	if e != nil {
-		return ioctlInner(f.Fd(), cmd, ptr) // Fall back to blocking io (old behavior).
+		return ioctlInner(f.Fd(), cmd, ptrToUintptr(ptr)) // Fall back to blocking io (old behavior).
 	}
 
 	ch := make(chan error, 1)
 	defer close(ch)
 
-	e = sc.Control(func(fd uintptr) { ch <- ioctlInner(fd, cmd, ptr) })
+	e = sc.Control(func(fd uintptr) { ch <- ioctlInner(fd, cmd, ptrToUintptr(ptr)) })
 	if e != nil {
 		return e
 	}
