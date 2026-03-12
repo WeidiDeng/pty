@@ -40,8 +40,8 @@ type strioctl struct {
 // Defined in asm_solaris_amd64.s.
 func sysvicall6(trap, nargs, a1, a2, a3, a4, a5, a6 uintptr) (r1, r2 uintptr, err syscall.Errno)
 
-func ioctlInner(fd, cmd, ptr uintptr) error {
-	if _, _, errno := sysvicall6(uintptr(unsafe.Pointer(&procioctl)), 3, fd, cmd, ptr, 0, 0, 0); errno != 0 {
+func ioctlInner(fd, cmd uintptr, ptr unsafe.Pointer) error {
+	if _, _, errno := sysvicall6(uintptr(unsafe.Pointer(&procioctl)), 3, fd, cmd, uintptr(ptr), 0, 0, 0); errno != 0 {
 		return errno
 	}
 	return nil
