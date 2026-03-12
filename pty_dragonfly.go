@@ -55,7 +55,7 @@ func unlockpt(f *os.File) error {
 }
 
 func isptmaster(f *os.File) (bool, error) {
-	err := ioctl(f, syscall.TIOCISPTMASTER, unsafe.Pointer(0))
+	err := ioctl(f, syscall.TIOCISPTMASTER, unsafe.Pointer(nil))
 	return err == nil, err
 }
 

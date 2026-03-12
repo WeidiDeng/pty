@@ -45,7 +45,7 @@ func open() (pty, tty *os.File, err error) {
 }
 
 func isptmaster(f *os.File) (bool, error) {
-	err := ioctl(f, syscall.TIOCPTMASTER, unsafe.Pointer(0))
+	err := ioctl(f, syscall.TIOCPTMASTER, unsafe.Pointer(nil))
 	return err == nil, err
 }
 

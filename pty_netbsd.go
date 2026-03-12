@@ -65,5 +65,5 @@ func grantpt(f *os.File) error {
 	 * from grantpt(3): Calling grantpt() is equivalent to:
 	 * ioctl(fd, TIOCGRANTPT, 0);
 	 */
-	return ioctl(f, uintptr(ioctl_TIOCGRANTPT), unsafe.Pointer(0))
+	return ioctl(f, uintptr(ioctl_TIOCGRANTPT), unsafe.Pointer(nil))
 }

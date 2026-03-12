@@ -60,9 +60,9 @@ func ptsname(f *os.File) (string, error) {
 }
 
 func grantpt(f *os.File) error {
-	return ioctl(f, syscall.TIOCPTYGRANT, unsafe.Pointer(0))
+	return ioctl(f, syscall.TIOCPTYGRANT, unsafe.Pointer(nil))
 }
 
 func unlockpt(f *os.File) error {
-	return ioctl(f, syscall.TIOCPTYUNLK, unsafe.Pointer(0))
+	return ioctl(f, syscall.TIOCPTYUNLK, unsafe.Pointer(nil))
 }
