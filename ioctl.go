@@ -9,11 +9,7 @@ import (
 )
 
 func ioctl(f *os.File, cmd uintptr, ptr unsafe.Pointer) error {
-	return ioctlInner(f.Fd(), cmd, ptr) // Fall back to blocking io.
-}
-
-// NOTE: Unused. Keeping for reference.
-func ioctlNonblock(f *os.File, cmd uintptr, ptr unsafe.Pointer) error {	sc, e := f.SyscallConn()
+	sc, e := f.SyscallConn()
 	if e != nil {
 		return ioctlInner(f.Fd(), cmd, ptr) // Fall back to blocking io (old behavior).
 	}
